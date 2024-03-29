@@ -97,7 +97,7 @@ function Legend() {
   const map = useMap();
 
   React.useEffect(() => {
-    const legend = L.control({ position: "bottomright" });
+    const legend = L.control({ position: "topright" });
 
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "info legend");
