@@ -12,14 +12,14 @@ import Box from "@mui/material/Box";
 import "./Map.css";
 const layerInfo = [
   {
-    name: "NCLIMGRID Daily SPI 12mo",
+    name: "layer1",
     url: "http://localhost:8080/geoserver/ne/wms",
-    layer: "ne:NCLIMGRID_DAILY-spi-12mo",
+    layer: "ne:layer1",
   },
   {
     name: "Layer 2",
-    url: "geoserver_wms_url",
-    layer: "geoserver_layer_name",
+    url: "http://localhost:8080/geoserver/ne/wms",
+    layer: "layer2",
   },
   {
     name: "Layer 3",
@@ -102,7 +102,7 @@ function Legend() {
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "info legend");
       div.innerHTML +=
-        '<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=ne:NCLIMGRID_DAILY-spi-12mo&STYLE=testspi" alt="legend">';
+        '<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=ne:layer1" alt="legend">';
       return div;
     };
 
@@ -116,3 +116,4 @@ function Legend() {
 
   return null;
 }
+

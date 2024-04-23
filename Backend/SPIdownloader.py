@@ -1,5 +1,4 @@
 import requests
-import schedule
 
 #URL that was received from drought.gov for SPI 1 month data
 url = "https://storage.googleapis.com/noaa-nidis-drought-gov-data/current-conditions/tile/v1/ce-GLOBAL-NOAA_CPC_DAILY_GLOBAL-spi-1mo/GLOBAL-NOAA_CPC_DAILY_GLOBAL-spi-1mo.tif"
@@ -17,9 +16,3 @@ def download_spi_data():
       print(f"SPI data downloaded successfully to {filename}")
   else:
     print(f"Download failed with status code: {response.status_code}")
-
-#Schedule it to run everyday at midnight
-schedule.every().day.at("00:00").do(download_spi_data)
-
-while True:
-  schedule.run_pending()
