@@ -19,7 +19,7 @@ def download_spi_data(url, filename):
   # Download and save the file logic
   response = requests.get(url, stream=True)
   if response.status_code == 200:
-    with open(filename, "wb") as f:
+    with open('./data/'+filename, "wb") as f:
       for chunk in response.iter_content(1024):
         f.write(chunk)
       print(f"SPI data downloaded successfully to {filename}")
@@ -33,6 +33,5 @@ geo = Geoserver('http://127.0.0.1:8080/geoserver', username='admin', password='g
 for filename, url in indexes.items():
   download_spi_data(url, filename)
   SPIConverter.convert_SPI_to_Madagascar(filename)
-  updated_filename = (filename.split('.')[0] + '_madagascar.tif').replace('global','')
-  # print(updated_filename)
-  upload_to_server(updated_filename, './' + filename.split('.')[0] + '_madagascar.tif', geo)
+  updated_filename = (filename.split('.')[0] + '_madagascar.tif').replace('global_','')
+  upload_to_server(updated_filename, './data/' + filename.split('.')[0] + '_madagascar.tif', geo)

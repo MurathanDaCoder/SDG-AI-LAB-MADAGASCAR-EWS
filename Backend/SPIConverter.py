@@ -6,7 +6,7 @@ from rasterio.mask import mask
 def convert_SPI_to_Madagascar(filename):
     madagascar_boundary = gpd.read_file('./geoBoundaries-MDG-ADM0_simplified.geojson')
 
-    with rasterio.open(filename) as src:
+    with rasterio.open('./data/'+filename) as src:
         # Crop the image to the boundary of Madagascar, using the mask function with filled=False so that areas outside the shape are transparent (NoData)
         out_image, out_transform = mask(src, madagascar_boundary.geometry, crop=True, filled=False)
         out_meta = src.meta.copy()
@@ -19,7 +19,7 @@ def convert_SPI_to_Madagascar(filename):
             "transform": out_transform,
             "nodata": -9999  # Notee: Make sure this is a suitable NoData value for the dataset
         })
-        new_filename = './' + filename.split('.')[0] + '_madagascar.tif'
+        new_filename = './data/' + filename.split('.')[0] + '_madagascar.tif'
         # Write the cropped and masked raster
         with rasterio.open(new_filename,'w', **out_meta) as dest:
             dest.write(out_image)
