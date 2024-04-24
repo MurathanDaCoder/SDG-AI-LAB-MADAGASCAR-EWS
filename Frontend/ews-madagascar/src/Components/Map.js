@@ -19,7 +19,7 @@ const layerInfo = [
   {
     name: "Layer 2",
     url: "http://localhost:8080/geoserver/ne/wms",
-    layer: "layer2",
+    layer: "ne:layer2",
   },
   {
     name: "Layer 3",
