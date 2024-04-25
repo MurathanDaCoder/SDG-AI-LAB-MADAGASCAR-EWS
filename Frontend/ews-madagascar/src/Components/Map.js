@@ -1,8 +1,31 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, LayerGroup, WMSTileLayer } from 'react-leaflet';
-import { FormControl, InputLabel, Select, MenuItem, Box, FormGroup, FormControlLabel, Switch } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormGroup,
+  FormControlLabel,
+  Switch,
+  Modal,
+  Typography,
+  IconButton
+} from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import './Map.css';
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
 // Define all categories of layers with their respective details
 const layers = {
   SPI: [
@@ -49,16 +72,25 @@ const layers = {
   ]
 };
 
+const indexInfo = {
+  SPI: "The Standardized Precipitation Index (SPI) is used to monitor droughts and unusually wet events. It is calculated over different timescales to reflect short and long-term trends.",
+  Precipitation: "Precipitation data measures the amount of precipitation over a certain area and time period. This index helps in understanding rainfall patterns which are crucial for agricultural planning and flood prevention.",
+  Precipitation_percent: "This index represents the percentage of normal precipitation received over a specific time period compared to a long-term average. It is useful for identifying deviations from typical rainfall patterns.",
+  SPEI: "The Standardized Precipitation Evapotranspiration Index (SPEI) combines temperature and precipitation data to determine drought conditions. It accounts for evaporation and transpiration and provides a more comprehensive drought assessment.",
+  EDDI: "The Evaporative Demand Drought Index (EDDI) measures the atmospheric demand for water in the form of evaporation. It is an indicator of drought, showing how quickly a landscape can dry out."
+};
 
 export default function Map() {
   const [selectedLayers, setSelectedLayers] = useState({});
   const [toggles, setToggles] = useState({});
+  const [openModal, setOpenModal] = useState(false);
+  const [modalContent, setModalContent] = useState('');
 
   const handleToggleChange = (category) => {
-    const newToggles = { ...toggles, [category]: !toggles[category] };
+    const currentlyToggled = toggles[category];
+    const newToggles = { ...toggles, [category]: !currentlyToggled };
     setToggles(newToggles);
-    // Remove the layer if the toggle is turned off
-    if (toggles[category]) {
+    if (currentlyToggled) {
       const newLayers = { ...selectedLayers };
       delete newLayers[category];
       setSelectedLayers(newLayers);
@@ -66,8 +98,16 @@ export default function Map() {
   };
 
   const handleLayerChange = (event, category) => {
-    const newLayers = { ...selectedLayers, [category]: event.target.value };
-    setSelectedLayers(newLayers);
+    setSelectedLayers({ ...selectedLayers, [category]: event.target.value });
+  };
+
+  const handleOpenModal = (info) => {
+    setModalContent(info);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   return (
@@ -76,13 +116,20 @@ export default function Map() {
         <FormGroup>
           {Object.keys(layers).map((category) => (
             <Box key={category}>
-              <FormControlLabel
-                control={<Switch checked={!!toggles[category]} onChange={() => handleToggleChange(category)} />}
-                label={category}
-              />
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <FormControlLabel
+                  control={<Switch checked={!!toggles[category]} onChange={() => handleToggleChange(category)} />}
+                  label={category.toUpperCase()}
+                  labelPlacement="end"
+                  sx={{ flexGrow: 1 }}
+                />
+                <IconButton onClick={() => handleOpenModal(indexInfo[category] || "No additional information available.")} size="small">
+                  <InfoIcon />
+                </IconButton>
+              </Box>
               {toggles[category] && (
-                <FormControl fullWidth>
-                  <InputLabel id={`${category}-label`}>{category}</InputLabel>
+                <FormControl fullWidth sx={{ marginTop: '8px' }}>
+                  <InputLabel id={`${category}-label`}>{category.toUpperCase()}</InputLabel>
                   <Select
                     labelId={`${category}-label`}
                     value={selectedLayers[category] || ''}
@@ -101,6 +148,21 @@ export default function Map() {
             </Box>
           ))}
         </FormGroup>
+        <Modal
+          open={openModal}
+          onClose={handleCloseModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Information
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              {modalContent}
+            </Typography>
+          </Box>
+        </Modal>
       </Box>
       <Box sx={{ flex: 6, height: '100%' }}>
         <MapContainer
