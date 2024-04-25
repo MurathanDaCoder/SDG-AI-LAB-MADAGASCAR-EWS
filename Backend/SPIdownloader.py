@@ -47,14 +47,14 @@ indexes_eddih = {"global_speih_1week.tif":"https://storage.googleapis.com/noaa-n
 
 index_list =[indexes_spi,indexes_precip,indexes_precip_percent,indexes_speih,indexes_eddih]
 
-def download_spi_data(url, filename,index_type):
+def download_spi_data(url, filename):
   # Download and save the file logic
   response = requests.get(url, stream=True)
   if response.status_code == 200:
     with open('./data/'+filename, "wb") as f:
       for chunk in response.iter_content(1024):
         f.write(chunk)
-      print(f"{index_type} data downloaded successfully to {filename}")
+      print(f"{filename} data downloaded successfully to {filename}")
   else:
     print(f"Download failed with status code: {response.status_code}")
 
@@ -64,7 +64,7 @@ def upload_to_server(layer_name, path,geo):
 geo = Geoserver('http://127.0.0.1:8080/geoserver', username='admin', password='geoserver')
 for index in index_list:
   for filename, url in index.items():
-    download_spi_data(url, filename,str(index))
+    download_spi_data(url, filename)
     SPIConverter.convert_SPI_to_Madagascar(filename)
     updated_filename = (filename.split('.')[0] + '_madagascar.tif').replace('global_','')
     upload_to_server(updated_filename, './data/' + filename.split('.')[0] + '_madagascar.tif', geo)
