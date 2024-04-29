@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { MapContainer, TileLayer, LayerGroup, WMSTileLayer } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import L from 'leaflet';
+import { MapContainer, TileLayer, LayerGroup, WMSTileLayer, useMap } from 'react-leaflet';
 import {
   Box,
   FormControl,
@@ -80,6 +81,93 @@ const indexInfo = {
   EDDI: "The Evaporative Demand Drought Index (EDDI) measures the atmospheric demand for water in the form of evaporation. It is an indicator of drought, showing how quickly a landscape can dry out."
 };
 
+const LegendControl = ({ }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const legend = L.control({ position: 'topright' });
+
+    legend.onAdd = function () {
+      this._div = L.DomUtil.create('div', 'info legend');
+      this._div.style.padding = '6px 8px';
+      this._div.style.backgroundColor = 'white';
+      this._div.style.borderRadius = '5px';
+      this._div.style.boxShadow = '0 4px 6px rgba(0,0,0,0.2)';
+      this._div.style.fontSize = '0.9rem';
+      this._div.style.width = '100px';
+      const grades = [0, 10, 20, 50, 100, 200, 500, 1000]; // Dummy thresholds
+      const colors = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']; // Dummy colors
+
+      let labels = ['<strong>Legend</strong>'];
+      grades.forEach((grade, index) => {
+        labels.push(
+          `<p><i style="background:${colors[index]};width:18px;height:18px;float:left;"></i> ${grade}${grades[index + 1] ? `&ndash;${grades[index + 1]}` : '+'}</p>`
+        );
+      });
+      console.log(labels);
+      this._div.innerHTML = labels.join('');
+      return this._div;
+    };
+
+    legend.addTo(map);
+
+    return () => {
+      legend.remove();
+    };
+  }, []); // This effect does not depend on any states or props
+
+  return null;
+};
+
+const DataSummaryControl = ({ layers, indexInfo, selectedLayers }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const control = L.control({ position: 'bottomright' });
+
+    control.onAdd = function () {
+      this._div = L.DomUtil.create('div', 'data-summary');
+      this._div.style.backgroundColor = 'white';
+      this._div.style.padding = '10px 15px';
+      this._div.style.borderRadius = '5px';
+      this._div.style.boxShadow = '0 4px 6px rgba(0,0,0,0.2)';
+      this._div.style.width = '250px';
+      this._div.style.maxHeight = '150px';
+      this._div.style.overflowY = 'auto';
+      this._div.style.fontSize = '0.9rem';
+      this._div.style.display = 'none';  // Initially hidden
+      this.updateContent(); // Initialize content
+      return this._div;
+    };
+
+    control.updateContent = () => {
+      if (!control._div) return; // Ensure the div is available
+      if (Object.keys(selectedLayers).length === 0) {
+        control._div.style.display = 'none'; // Hide div if no data is selected
+      } else {
+        control._div.innerHTML = ''; // Clear previous content
+        control._div.style.display = 'block'; // Ensure div is visible when there are selected layers
+        Object.entries(selectedLayers).forEach(([category, layer]) => {
+          const layerDetail = layers[category].find(l => l.layer === layer);
+          if (layerDetail) {
+            const infoText = `${layerDetail.name}: ${indexInfo[category]}`;
+            control._div.innerHTML += `<p style="margin: 5px 0;">${infoText}</p>`;
+          }
+        });
+      }
+    };
+
+    control.addTo(map); // Add control to the map
+
+    return () => {
+      control.remove(); // Clean up control when component unmounts
+    };
+  }, [selectedLayers]); // Re-run effect when selectedLayers changes
+
+  return null;
+};
+
+
 export default function Map() {
   const [selectedLayers, setSelectedLayers] = useState({});
   const [toggles, setToggles] = useState({});
@@ -90,7 +178,9 @@ export default function Map() {
     const currentlyToggled = toggles[category];
     const newToggles = { ...toggles, [category]: !currentlyToggled };
     setToggles(newToggles);
-    if (currentlyToggled) {
+    if (!currentlyToggled) {
+      setSelectedLayers({ ...selectedLayers, [category]: layers[category][0].layer });
+    } else {
       const newLayers = { ...selectedLayers };
       delete newLayers[category];
       setSelectedLayers(newLayers);
@@ -165,12 +255,9 @@ export default function Map() {
         </Modal>
       </Box>
       <Box sx={{ flex: 6, height: '100%' }}>
-        <MapContainer
-          center={[-19.373, 46.704]}
-          zoom={6}
-          style={{ width: '100%', height: '100%' }}
-        >
+        <MapContainer center={[-19.373, 46.704]} zoom={6} style={{ width: '100%', height: '100%' }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
           {Object.entries(selectedLayers).map(([category, layer]) =>
             layer ? (
               <LayerGroup key={layer}>
@@ -183,6 +270,8 @@ export default function Map() {
               </LayerGroup>
             ) : null
           )}
+          <DataSummaryControl layers={layers} indexInfo={indexInfo} selectedLayers={selectedLayers} />
+          <LegendControl />
         </MapContainer>
       </Box>
     </Box>
