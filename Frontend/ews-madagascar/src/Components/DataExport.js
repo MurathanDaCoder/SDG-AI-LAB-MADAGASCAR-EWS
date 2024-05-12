@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Container,
   Typography,
@@ -43,7 +43,7 @@ function DataExport() {
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Data Export
+        Generate Report
       </Typography>
       <FormControl fullWidth margin="normal">
         <InputLabel id="indicator-label">Indicator</InputLabel>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import L from 'leaflet';
 import { MapContainer, TileLayer, LayerGroup, WMSTileLayer, useMap } from 'react-leaflet';
 import {
@@ -101,7 +101,7 @@ const LegendControl = ({ }) => {
       let labels = ['<strong>Legend</strong>'];
       grades.forEach((grade, index) => {
         labels.push(
-          `<p><i style="background:${colors[index]};width:18px;height:18px;float:left;"></i> ${grade}${grades[index + 1] ? `&ndash;${grades[index + 1]}` : '+'}</p>`
+          `<p><i style="background:${colors[index]};width:18px;height:18px;float:left;"></i>&nbsp;${grade}${grades[index + 1] ? `&ndash;${grades[index + 1]}` : '+'}</p>`
         );
       });
       console.log(labels);
