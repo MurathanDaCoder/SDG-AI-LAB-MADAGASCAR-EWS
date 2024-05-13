@@ -27,8 +27,8 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-// Define all categories of layers with their respective details
-const layers = {
+
+const layerGroups = {
   SPI: [
     { name: 'SPI 1 Month', layer: 'ne:spi_1month_madagascar.tif' },
     { name: 'SPI 2 Months', layer: 'ne:spi_2month_madagascar.tif' },
@@ -36,6 +36,14 @@ const layers = {
     { name: 'SPI 6 Months', layer: 'ne:spi_6month_madagascar.tif' },
     { name: 'SPI 9 Months', layer: 'ne:spi_9month_madagascar.tif' },
     { name: 'SPI 12 Months', layer: 'ne:spi_12month_madagascar.tif' },
+  ],
+  SPEI: [
+    { name: 'SPEI 1 Month', layer: 'ne:speih_1month_madagascar.tif' },
+    { name: 'SPEI 2 Months', layer: 'ne:speih_2month_madagascar.tif' },
+    { name: 'SPEI 3 Months', layer: 'ne:speih_3month_madagascar.tif' },
+    { name: 'SPEI 6 Months', layer: 'ne:speih_6month_madagascar.tif' },
+    { name: 'SPEI 9 Months', layer: 'ne:speih_9month_madagascar.tif' },
+    { name: 'SPEI 12 Months', layer: 'ne:speih_12month_madagascar.tif' },
   ],
   Precipitation: [
     { name: 'Precipitation 1 Month', layer: 'ne:precip_1month_madagascar.tif' },
@@ -53,14 +61,6 @@ const layers = {
     { name: 'Precip Percent 9 Months', layer: 'ne:precip_percent_9month_madagascar.tif' },
     { name: 'Precip Percent 12 Months', layer: 'ne:precip_percent_12month_madagascar.tif' },
   ],
-  SPEI: [
-    { name: 'SPEI 1 Month', layer: 'ne:speih_1month_madagascar.tif' },
-    { name: 'SPEI 2 Months', layer: 'ne:speih_2month_madagascar.tif' },
-    { name: 'SPEI 3 Months', layer: 'ne:speih_3month_madagascar.tif' },
-    { name: 'SPEI 6 Months', layer: 'ne:speih_6month_madagascar.tif' },
-    { name: 'SPEI 9 Months', layer: 'ne:speih_9month_madagascar.tif' },
-    { name: 'SPEI 12 Months', layer: 'ne:speih_12month_madagascar.tif' },
-  ],
   EDDI: [
     { name: 'EDDI 1 Week', layer: 'ne:eddih_1week_madagascar.tif' },
     { name: 'EDDI 2 Weeks', layer: 'ne:eddih_2week_madagascar.tif' },
@@ -70,18 +70,54 @@ const layers = {
     { name: 'EDDI 6 Months', layer: 'ne:eddih_6month_madagascar.tif' },
     { name: 'EDDI 9 Months', layer: 'ne:eddih_9month_madagascar.tif' },
     { name: 'EDDI 12 Months', layer: 'ne:eddih_12month_madagascar.tif' },
-  ]
+  ],
+  Temperature: [
+    { name: 'Max Temperature', layer: 'ne:max_temp_monthly.tif' },
+    { name: 'Min Temperature', layer: 'ne:min_temp_monthly.tif' },
+    { name: 'Temperature Anomaly', layer: 'ne:temp_anomaly_monthly.tif' },
+  ],
+  Seismic: [
+    { name: 'Seismic Activity', layer: 'ne:seismic_activity.tif' },
+    { name: 'Earthquake Risk Zones', layer: 'ne:earthquake_risk_zones.tif' },
+  ],
+  AirQuality: [
+    { name: 'PM2.5 Air Quality', layer: 'ne:pm25_monthly.tif' },
+    { name: 'Air Quality Index', layer: 'ne:aqi_monthly.tif' },
+  ],
+  Wildfire: [
+    { name: 'Fire Risk Zones', layer: 'ne:fire_risk_zones.tif' },
+    { name: 'Historical Burn Area', layer: 'ne:historical_burn_area.tif' },
+  ],
+  Flooding: [
+    { name: 'Flood Risk Zones', layer: 'ne:flood_risk_zones.tif' },
+    { name: 'Historical Flood Extents', layer: 'ne:historical_flood_extents.tif' },
+  ],
+};
+
+const categories = {
+  Soil: ['SPI', 'SPEI'],
+  Rain: ['Precipitation', 'Precipitation_percent'],
+  Drought: ['EDDI'],
+  Temperature: ['Temperature'],
+  Seismic: ['Seismic'],
+  AirQuality: ['AirQuality', 'Wildfire'],
+  Flooding: ['Flooding'],
 };
 
 const indexInfo = {
-  SPI: "The Standardized Precipitation Index (SPI) is used to monitor droughts and unusually wet events. It is calculated over different timescales to reflect short and long-term trends.",
-  Precipitation: "Precipitation data measures the amount of precipitation over a certain area and time period. This index helps in understanding rainfall patterns which are crucial for agricultural planning and flood prevention.",
-  Precipitation_percent: "This index represents the percentage of normal precipitation received over a specific time period compared to a long-term average. It is useful for identifying deviations from typical rainfall patterns.",
-  SPEI: "The Standardized Precipitation Evapotranspiration Index (SPEI) combines temperature and precipitation data to determine drought conditions. It accounts for evaporation and transpiration and provides a more comprehensive drought assessment.",
-  EDDI: "The Evaporative Demand Drought Index (EDDI) measures the atmospheric demand for water in the form of evaporation. It is an indicator of drought, showing how quickly a landscape can dry out."
+  SPI: "Standardized Precipitation Index (SPI) measures the precipitation over different time scales.",
+  SPEI: "Standardized Precipitation Evapotranspiration Index (SPEI) combines temperature and precipitation data.",
+  Precipitation: "Measures the amount of precipitation over a certain area and time period.",
+  Precipitation_percent: "Represents the percentage of normal precipitation received over a specific time period.",
+  EDDI: "Evaporative Demand Drought Index (EDDI) measures the atmospheric demand for water in the form of evaporation.",
+  Temperature: "Provides data on temperature extremes, anomalies, and their implications on environmental conditions.",
+  Seismic: "Tracks seismic activity and potential earthquake risks across different regions.",
+  AirQuality: "Monitors particulate matter (PM2.5) and overall air quality indices crucial for public health.",
+  Wildfire: "Assesses wildfire risks and historical burn areas to aid in fire management and prevention strategies.",
+  Flooding: "Maps flood risk zones and historical flood extents to help in flood readiness and mitigation efforts.",
 };
 
-const LegendControl = ({ }) => {
+function LegendControl({ }) {
   const map = useMap();
 
   useEffect(() => {
@@ -104,7 +140,6 @@ const LegendControl = ({ }) => {
           `<p><i style="background:${colors[index]};width:18px;height:18px;float:left;"></i>&nbsp;${grade}${grades[index + 1] ? `&ndash;${grades[index + 1]}` : '+'}</p>`
         );
       });
-      console.log(labels);
       this._div.innerHTML = labels.join('');
       return this._div;
     };
@@ -114,12 +149,12 @@ const LegendControl = ({ }) => {
     return () => {
       legend.remove();
     };
-  }, []); // This effect does not depend on any states or props
+  }, []);
 
   return null;
-};
+}
 
-const DataSummaryControl = ({ layers, indexInfo, selectedLayers }) => {
+function DataSummaryControl({ layers, indexInfo, selectedLayers }) {
   const map = useMap();
 
   useEffect(() => {
@@ -165,8 +200,7 @@ const DataSummaryControl = ({ layers, indexInfo, selectedLayers }) => {
   }, [selectedLayers]); // Re-run effect when selectedLayers changes
 
   return null;
-};
-
+}
 
 export default function Map() {
   const [selectedLayers, setSelectedLayers] = useState({});
@@ -179,7 +213,7 @@ export default function Map() {
     const newToggles = { ...toggles, [category]: !currentlyToggled };
     setToggles(newToggles);
     if (!currentlyToggled) {
-      setSelectedLayers({ ...selectedLayers, [category]: layers[category][0].layer });
+      setSelectedLayers({ ...selectedLayers, [category]: layerGroups[category][0].layer });
     } else {
       const newLayers = { ...selectedLayers };
       delete newLayers[category];
@@ -204,37 +238,41 @@ export default function Map() {
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <Box sx={{ flex: 1, padding: '20px' }}>
         <FormGroup>
-          {Object.keys(layers).map((category) => (
-            <Box key={category}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                <FormControlLabel
-                  control={<Switch checked={!!toggles[category]} onChange={() => handleToggleChange(category)} />}
-                  label={category.toUpperCase()}
-                  labelPlacement="end"
-                  sx={{ flexGrow: 1 }}
-                />
-                <IconButton onClick={() => handleOpenModal(indexInfo[category] || "No additional information available.")} size="small">
-                  <InfoIcon />
-                </IconButton>
-              </Box>
-              {toggles[category] && (
-                <FormControl fullWidth sx={{ marginTop: '8px' }}>
-                  <InputLabel id={`${category}-label`}>{category.toUpperCase()}</InputLabel>
-                  <Select
-                    labelId={`${category}-label`}
-                    value={selectedLayers[category] || ''}
-                    label={category.toUpperCase()}
-                    onChange={(e) => handleLayerChange(e, category)}
-                  // style={{ marginLeft: '20px', marginRight: '20px' }}
-                  >
-                    {layers[category].map((layer) => (
-                      <MenuItem key={layer.name} value={layer.layer}>
-                        {layer.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+          {Object.keys(categories).map((categoryName) => (
+            <Box key={categoryName}>
+              <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>{categoryName}</Typography>
+              {categories[categoryName].map((category) => (
+                <Box key={category}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                    <FormControlLabel
+                      control={<Switch checked={!!toggles[category]} onChange={() => handleToggleChange(category)} />}
+                      label={category.toUpperCase()}
+                      labelPlacement="end"
+                      sx={{ flexGrow: 1 }}
+                    />
+                    <IconButton onClick={() => handleOpenModal(indexInfo[category] || "No additional information available.")} size="small">
+                      <InfoIcon />
+                    </IconButton>
+                  </Box>
+                  {toggles[category] && (
+                    <FormControl fullWidth sx={{ marginTop: '8px' }}>
+                      <InputLabel id={`${category}-label`}>{category.toUpperCase()}</InputLabel>
+                      <Select
+                        labelId={`${category}-label`}
+                        value={selectedLayers[category] || ''}
+                        label={category.toUpperCase()}
+                        onChange={(e) => handleLayerChange(e, category)}
+                      >
+                        {layerGroups[category].map((layer) => (
+                          <MenuItem key={layer.name} value={layer.layer}>
+                            {layer.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                </Box>
+              ))}
             </Box>
           ))}
         </FormGroup>
@@ -270,36 +308,10 @@ export default function Map() {
               </LayerGroup>
             ) : null
           )}
-          <DataSummaryControl layers={layers} indexInfo={indexInfo} selectedLayers={selectedLayers} />
+          <DataSummaryControl layers={layerGroups} indexInfo={indexInfo} selectedLayers={selectedLayers} />
           <LegendControl />
         </MapContainer>
       </Box>
     </Box>
   );
 }
-
-
-// function Legend() {
-//   const map = useMap();
-
-//   React.useEffect(() => {
-//     const legend = L.control({ position: "topright" });
-
-//     legend.onAdd = function () {
-//       const div = L.DomUtil.create("div", "info legend");
-//       div.innerHTML +=
-//         '<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=ne:layer1" alt="legend">';
-//       return div;
-//     };
-
-//     legend.addTo(map);
-
-//     // Cleanup function on unmount
-//     return () => {
-//       legend.remove();
-//     };
-//   }, [map]);
-
-//   return null;
-// }
-
